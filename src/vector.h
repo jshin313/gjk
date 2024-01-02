@@ -24,8 +24,6 @@ struct polygon_t {
 	int num_points;
 };
 
-void print_vector(const char * name, struct vector_t v);
-
 /**
  * Computes \f$(\pmb{v_1} \dot \pmb{v_2})\f$
  */

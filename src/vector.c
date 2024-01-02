@@ -6,11 +6,6 @@
 
 #include "vector.h"
 
-void print_vector(const char* name, struct vector_t v) {
-	printf("%s: (%d, %d, %d)\n", name, v.x, v.y, v.z);
-}
-
-
 int dot(struct vector_t v1, struct vector_t v2) {
 	return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
 }
@@ -62,7 +57,7 @@ unsigned int int_sqrt(unsigned int s) {
  * Won't be exact since int is used instead of floats, but we don't need too much precision, since we're only checking 
  * if vectors are < 0
  *
- * Use norm so that integers don't get really big..
+ * Use norm so that integers don't get really big.
  *
  */
 struct vector_t normalize_if_norm_nonzero(struct vector_t v) {
