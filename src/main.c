@@ -28,6 +28,10 @@ struct sdl_poly_t sdl_poly2 = {
 	.size=5
 };
 
+// Will hold same information as above except in the format used by gjk_collision 
+struct polygon_t gjk_poly1;
+struct polygon_t gjk_poly2;
+
 void redraw(bool collision) {
 
 	SDL_SetRenderDrawColor(renderer, /* RGBA: black */ 0x00, 0x00, 0x00, 0x00);
@@ -94,14 +98,15 @@ bool handle_events() {
 		sdl_poly2_selected = false;
 	}
 
+	int mouse_x, mouse_y;
+	SDL_GetMouseState(&mouse_x, &mouse_y);
+
 	if (mouse_button_held) {
 		uint32_t ticksNow = SDL_GetTicks();
 		if (SDL_TICKS_PASSED(ticksNow, ticksForNextRedraw)) {
 			// Throttle redraw
 			ticksForNextRedraw = ticksNow + 10;
 
-			int mouse_x, mouse_y;
-			SDL_GetMouseState(&mouse_x, &mouse_y);
 
 			// Select which polygon to drag if you hold down mouse button and you click inside border of that polygon
 			if (pnpoly(sdl_poly1.size, sdl_poly1.x_arr, sdl_poly1.y_arr, mouse_x, mouse_y) && !sdl_poly2_selected) {
@@ -110,53 +115,54 @@ bool handle_events() {
 				sdl_poly2_selected = true;
 			}
 
-			// Update polygon state if you move mouse
-			if (sdl_poly1_selected) {
-				sdl_poly1.x_arr[0] = mouse_x-30;
-				sdl_poly1.x_arr[1] = mouse_x-30;
-				sdl_poly1.x_arr[2] = mouse_x+30;
-				sdl_poly1.x_arr[3] = mouse_x+30;
-
-				sdl_poly1.y_arr[0] = mouse_y - 15;
-				sdl_poly1.y_arr[1] = mouse_y + 15;
-				sdl_poly1.y_arr[2] = mouse_y + 15;
-				sdl_poly1.y_arr[3] = mouse_y - 15;
-
-			} else if (sdl_poly2_selected) {
-				sdl_poly2.x_arr[0] = mouse_x;
-				sdl_poly2.x_arr[1] = mouse_x-30;
-				sdl_poly2.x_arr[2] = mouse_x-15;
-				sdl_poly2.x_arr[3] = mouse_x+15;
-				sdl_poly2.x_arr[4] = mouse_x+30;
-
-				sdl_poly2.y_arr[0] = mouse_y - 30;
-				sdl_poly2.y_arr[1] = mouse_y - 10;
-				sdl_poly2.y_arr[2] = mouse_y + 30;
-				sdl_poly2.y_arr[3] = mouse_y + 30;
-				sdl_poly2.y_arr[4] = mouse_y - 10;
-
-			}
-
-			struct polygon_t p1 = {
-				.points = (struct vector_t*) alloca(sdl_poly1.size * sizeof(struct vector_t)),
-				.num_points = sdl_poly1.size
-			};
-			struct polygon_t p2 = {
-				.points = (struct vector_t*) alloca(sdl_poly2.size * sizeof(struct vector_t)),
-				.num_points = sdl_poly2.size
-			};
-			convert_to_polygon(sdl_poly1, &p1);
-			convert_to_polygon(sdl_poly2, &p2);
-
-			redraw(gjk_collision(p1, p2));
 		}
 	}
+	// Update polygon state if you move mouse
+	if (sdl_poly1_selected) {
+
+		sdl_poly1.x_arr[0] = mouse_x-30;
+		sdl_poly1.x_arr[1] = mouse_x-30;
+		sdl_poly1.x_arr[2] = mouse_x+30;
+		sdl_poly1.x_arr[3] = mouse_x+30;
+
+		sdl_poly1.y_arr[0] = mouse_y - 15;
+		sdl_poly1.y_arr[1] = mouse_y + 15;
+		sdl_poly1.y_arr[2] = mouse_y + 15;
+		sdl_poly1.y_arr[3] = mouse_y - 15;
+
+		convert_to_polygon(sdl_poly1, &gjk_poly1);
+		convert_to_polygon(sdl_poly2, &gjk_poly2);
+		redraw(gjk_collision(gjk_poly1, gjk_poly2));
+
+	} else if (sdl_poly2_selected) {
+
+		sdl_poly2.x_arr[0] = mouse_x;
+		sdl_poly2.x_arr[1] = mouse_x-30;
+		sdl_poly2.x_arr[2] = mouse_x-15;
+		sdl_poly2.x_arr[3] = mouse_x+15;
+		sdl_poly2.x_arr[4] = mouse_x+30;
+
+		sdl_poly2.y_arr[0] = mouse_y - 30;
+		sdl_poly2.y_arr[1] = mouse_y - 10;
+		sdl_poly2.y_arr[2] = mouse_y + 30;
+		sdl_poly2.y_arr[3] = mouse_y + 30;
+		sdl_poly2.y_arr[4] = mouse_y - 10;
+
+		convert_to_polygon(sdl_poly1, &gjk_poly1);
+		convert_to_polygon(sdl_poly2, &gjk_poly2);
+		redraw(gjk_collision(gjk_poly1, gjk_poly2));
+	}
+
 	return true;
+}
+
+void call_handle_events(void) { 
+	handle_events(); 
 }
 
 void run_main_loop() {
 #ifdef __EMSCRIPTEN__
-	emscripten_set_main_loop([]() { handle_events(); }, 0, true);
+	emscripten_set_main_loop(call_handle_events, 0, true);
 #else
 	while (handle_events())
 		;
@@ -168,18 +174,15 @@ int main() {
 
 	SDL_CreateWindowAndRenderer(320, 240, 0, &window, &renderer);
 
-	struct polygon_t p1 = {
-		.points = (struct vector_t*) alloca(sdl_poly1.size * sizeof(struct vector_t)),
-		.num_points = sdl_poly1.size
-	};
-	struct polygon_t p2 = {
-		.points = (struct vector_t*) alloca(sdl_poly2.size * sizeof(struct vector_t)),
-		.num_points = sdl_poly2.size
-	};
-	convert_to_polygon(sdl_poly1, &p1);
-	convert_to_polygon(sdl_poly2, &p2);
+	gjk_poly1.points = (struct vector_t*) alloca(sdl_poly1.size * sizeof(struct vector_t));
+	gjk_poly1.num_points = sdl_poly1.size;
+	gjk_poly2.points = (struct vector_t*) alloca(sdl_poly2.size * sizeof(struct vector_t));
+	gjk_poly2.num_points = sdl_poly2.size;
 
-	redraw(gjk_collision(p1, p2));
+	convert_to_polygon(sdl_poly1, &gjk_poly1);
+	convert_to_polygon(sdl_poly2, &gjk_poly2);
+
+	redraw(gjk_collision(gjk_poly1, gjk_poly2));
 
 	run_main_loop();
 
