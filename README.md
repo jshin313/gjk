@@ -11,5 +11,5 @@ Implementation of GJK algorithm for collision detection
 ## Directories
 * `public`: WebASM `index.html` and `index.js`
     * `serve.sh` starts a simple server to start the WebASM
-* `bin`: Native binary file
+* `bin`: Native binary and 8xp files
 * `src`: Source code
