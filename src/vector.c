@@ -6,7 +6,7 @@
 
 #include "vector.h"
 
-int dot(struct vector_t v1, struct vector_t v2) {
+int32_t dot(struct vector_t v1, struct vector_t v2) {
 	return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
 }
 
@@ -18,7 +18,7 @@ struct vector_t sub(struct vector_t v1, struct vector_t v2) {
 	};
 }
 
-struct vector_t scalar_mult(int s, struct vector_t v) {
+struct vector_t scalar_mult(int32_t s, struct vector_t v) {
 	return (struct vector_t) {
 		.x= s * v.x,
 		.y= s * v.y,

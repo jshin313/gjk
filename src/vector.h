@@ -14,9 +14,9 @@ extern "C" {
 #endif
 
 struct vector_t {
-	int x;
-	int y;
-	int z; // Not used currently
+	int32_t x;
+	int32_t y;
+	int32_t z; // Not used currently
 };
 
 struct polygon_t {
@@ -27,7 +27,7 @@ struct polygon_t {
 /**
  * Computes \f$(\pmb{v_1} \dot \pmb{v_2})\f$
  */
-int dot(struct vector_t v1, struct vector_t v2);
+int32_t dot(struct vector_t v1, struct vector_t v2);
 
 /**
  * Computes \f$(\pmb{v_1} - \pmb{v_2})\f$
@@ -38,7 +38,7 @@ struct vector_t sub(struct vector_t v1, struct vector_t v2);
 /**
  * Computes \f$(s  \pmb{v})\f$ with scalar, s, and vector, v
  */
-struct vector_t scalar_mult(int s, struct vector_t v);
+struct vector_t scalar_mult(int32_t s, struct vector_t v);
 
 /**
  * Computes (v1 x v2 x v3) using the following identity:

@@ -66,11 +66,11 @@ struct polygon_t minkowski_diff(struct polygon_t poly1, struct polygon_t poly2, 
 }
 
 struct vector_t support(struct vector_t d, struct polygon_t poly) {
-	int max_dp = dot(poly.points[0], d);
+	int32_t max_dp = dot(poly.points[0], d);
 	struct vector_t v = poly.points[0];
 
 	for (int i = 1; i < poly.num_points; i++) {
-		int dp = dot(poly.points[i], d);
+		int32_t dp = dot(poly.points[i], d);
 
 		if (dp > max_dp) {
 			max_dp = dp;
