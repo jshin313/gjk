@@ -64,6 +64,9 @@ int pnpoly(int nvert, int16_t *vertx, int16_t *verty, int testx, int testy)
   return c;
 }
 
+/**
+ * Convert SDLpoly_t type poly into polygon_t type used by the gjk_collision function
+ */
 void convert_to_polygon(struct sdl_poly_t poly, struct polygon_t* polygon) {
 	for (int i = 0; i < poly.size; i++) {
 		polygon->points[i] = (struct vector_t) {poly.x_arr[i], poly.y_arr[i], 0};
