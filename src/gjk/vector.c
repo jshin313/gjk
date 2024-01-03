@@ -6,7 +6,7 @@
 
 #include "vector.h"
 
-int32_t dot(struct vector_t v1, struct vector_t v2) {
+int64_t dot(struct vector_t v1, struct vector_t v2) {
 	return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
 }
 

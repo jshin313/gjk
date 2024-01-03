@@ -1,11 +1,15 @@
-// Based on https://web.dev/articles/drawing-to-canvas-in-emscripten
-#include <SDL2/SDL.h>
-#include <SDL2/SDL2_gfxPrimitives.h>
+#include <alloca.h>
+#include "gjk/gjk.h"
+
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
 
-#include "gjk.h"
+#ifndef TI84PCE
+
+// Based on https://web.dev/articles/drawing-to-canvas-in-emscripten
+#include <SDL2/SDL.h>
+#include <SDL2/SDL2_gfxPrimitives.h>
 
 SDL_Window *window;
 SDL_Renderer *renderer;
@@ -59,13 +63,13 @@ void redraw(bool collision) {
 // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
 int pnpoly(int nvert, int16_t *vertx, int16_t *verty, int testx, int testy)
 {
-  int i, j, c = 0;
-  for (i = 0, j = nvert-1; i < nvert; j = i++) {
-    if ( ((verty[i]>testy) != (verty[j]>testy)) &&
-     (testx < (vertx[j]-vertx[i]) * (testy-verty[i]) / (verty[j]-verty[i]) + vertx[i]) )
-       c = !c;
-  }
-  return c;
+	int i, j, c = 0;
+	for (i = 0, j = nvert-1; i < nvert; j = i++) {
+		if ( ((verty[i]>testy) != (verty[j]>testy)) &&
+				(testx < (vertx[j]-vertx[i]) * (testy-verty[i]) / (verty[j]-verty[i]) + vertx[i]) )
+			c = !c;
+	}
+	return c;
 }
 
 /**
@@ -192,3 +196,118 @@ int main() {
 	SDL_Quit();
 }
 
+#else
+
+#include <keypadc.h>
+#include <graphx.h>
+#include <debug.h>
+
+/**
+ * Convert int* points poly into polygon_t type used by the gjk_collision function
+ */
+void convert_to_polygon(int *points, int num_points, struct polygon_t* polygon) {
+	for (int i = 0; i < num_points; i++) {
+		polygon->points[i] = (struct vector_t) {points[2*i], points[2*i+1], 0};
+	}
+}
+
+struct polygon_t gjk_poly1;
+struct polygon_t gjk_poly2;
+
+const int GREEN = 0x07;
+const int RED = 0xE0;
+
+int main(void)
+{
+
+	gfx_Begin();
+	gfx_SetDrawBuffer();
+
+	int x=100, y=100;
+
+	// Set up polygons
+	int points1[8] = {
+		10+50,  30,  // (x0, y0)
+		10+50,  60,  // (x1, y1)
+		70+50, 60,  // (x2, y2)
+		70+50, 30,  // (x3, y3)
+	};
+
+	int points2[10] = {
+		x,  y-30,  // (x0, y0)
+		x-30,  y-10,  // (x1, y1)
+		x-15, y+30,  // (x2, y2)
+		x+15, y+30,  // (x3, y3)
+		x+30, y-10,  // (x4, y4)
+	};
+
+	gjk_poly1.num_points = sizeof(points1)/sizeof(points1[0])/2;
+	gjk_poly2.num_points = sizeof(points2)/sizeof(points2[0])/2;
+	gjk_poly1.points = (struct vector_t*) alloca(gjk_poly1.num_points * sizeof(struct vector_t));
+	gjk_poly2.points = (struct vector_t*) alloca(gjk_poly2.num_points * sizeof(struct vector_t));
+
+	do
+	{
+		kb_key_t arrows;
+
+		/* Scan the keypad to update kb_Data */
+		kb_Scan();
+
+		/* Get the arrow key statuses */
+		arrows = kb_Data[7];
+
+		/* Check if any arrows are pressed */
+		if (arrows)
+		{
+			int dx = 3, dy = 3;
+			/* Do different directions depending on the keypress */
+			if (arrows & kb_Right)
+			{
+				x += dx;
+			}
+			if (arrows & kb_Left)
+			{
+				x -= dx;
+			}
+			if (arrows & kb_Down)
+			{
+				y += dy;
+			}
+			if (arrows & kb_Up)
+			{
+				y -= dy;
+			}
+
+		}
+
+		/* Update Polygon 2 */
+		points2[0] = x,    points2[1] = y-30;  // (x0, y0)
+		points2[2] = x-30, points2[3] = y-10;  // (x1, y1)
+		points2[4] = x-15, points2[5] = y+30;  // (x2, y2)
+		points2[6] = x+15, points2[7] = y+30;  // (x3, y3)
+		points2[8] = x+30, points2[9] = y-10;  // (x4, y4)
+
+		convert_to_polygon(points1, gjk_poly1.num_points, &gjk_poly1);
+		convert_to_polygon(points2, gjk_poly2.num_points, &gjk_poly2);
+
+		int color = GREEN;
+		if(gjk_collision(gjk_poly1, gjk_poly2)) {
+			color = RED;
+		}
+
+		gfx_FillScreen(0xFF);
+		gfx_SetColor(color);
+		gfx_Polygon(points1, gjk_poly1.num_points);
+		gfx_Polygon(points2, gjk_poly2.num_points);
+
+		gfx_SwapDraw();
+
+	} while (kb_Data[6] != kb_Clear);
+
+
+	/* End graphics drawing */
+	gfx_End();
+
+	return 0;
+}
+#endif

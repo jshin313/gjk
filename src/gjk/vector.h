@@ -14,9 +14,9 @@ extern "C" {
 #endif
 
 struct vector_t {
-	int32_t x;
-	int32_t y;
-	int32_t z; // Not used currently
+	int64_t x;
+	int64_t y;
+	int64_t z; // Not used currently
 };
 
 struct polygon_t {
@@ -27,7 +27,7 @@ struct polygon_t {
 /**
  * Computes \f$(\pmb{v_1} \dot \pmb{v_2})\f$
  */
-int32_t dot(struct vector_t v1, struct vector_t v2);
+int64_t dot(struct vector_t v1, struct vector_t v2);
 
 /**
  * Computes \f$(\pmb{v_1} - \pmb{v_2})\f$
