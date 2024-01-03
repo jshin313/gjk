@@ -2,6 +2,7 @@ CC=clang
 
 CC_WEB=emcc
 FLAGS_WEB=-s USE_SDL=2 -s USE_SDL_GFX=2 --bind
+WEBGENDIR=public/gen
 
 CFLAGS=-I$(IDIR) -Wall -Wextra -Wno-missing-braces
 IDIR =src
@@ -28,8 +29,9 @@ $(BINDIR)/main: $(OBJ)
 .PHONY: clean
 
 clean:
-	rm -rf $(ODIR) $(BINDIR) *~ core $(INCDIR)/*~
+	rm -rf $(ODIR) $(BINDIR) $(WEBGENDIR) *~ core $(INCDIR)/*~
 
-# # Web version
-# web: $(OBJ)
-# 	$(CC_WEB) $^ -o index.html $(FLAGS_WEB)
+# WebASM version
+wasm:
+	@mkdir -p $(WEBGENDIR)
+	$(CC_WEB) $(SDIR)/*.c -o $(WEBGENDIR)/index.js $(FLAGS_WEB)
