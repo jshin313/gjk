@@ -1,12 +1,27 @@
 # GJK Collision Detection
-Implementation of GJK algorithm for collision detection
+Implementation of GJK algorithm for collision detection for native builds, WebASM, and the TI-84+ CE
 
 ![Animated png of the GJK collision working with two polygons on a TI-84+ CE calculator](screenshot.png)
 
 ## Building
-* For native builds: `make`
-* For WebAssembly: `make wasm` and then run `./public/serve.sh` to host the wasm files
-* For the TI-84+ CE: `make ti` and transfer the `bin/GJK.8xp` file to your calculator
+* Native builds: `make`
+* WebAssembly: `make wasm` and then run `./public/serve.sh` to host the wasm files
+* TI-84+ CE: `make ti` and transfer the `bin/GJK.8xp` file to your calculator
+
+## Dependencies
+* Native
+    * SDL2
+    * SDL2_gfx
+```
+ sudo apt-get install libsdl2-dev
+ sudo apt-get install libsdl2-gfx-dev
+```
+
+* WebASM
+    * [emcc](https://emscripten.org/docs/getting_started/downloads.html)
+* TI-84+ CE
+    * [CE Toolchain](https://ce-programming.github.io/toolchain/static/getting-started.html)
+    * Transfer clibs to your calculator: https://tiny.cc/clibs
 
 ## Directories
 * `public`: WebASM `index.html` and `index.js`
