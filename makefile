@@ -1,7 +1,7 @@
 CC=clang
 
 CC_WEB=emcc
-FLAGS_WEB=-s USE_SDL=2 -s USE_SDL_GFX=2 --bind
+FLAGS_WEB=-s USE_SDL=2 -s USE_SDL_GFX=2 --bind -s WASM=1 -O3
 WEBGENDIR=public/gen
 
 CFLAGS=-I$(IDIR) -Wall -Wextra

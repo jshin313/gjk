@@ -2,13 +2,13 @@
 # Makefile Options
 # ----------------------------
 
-NAME = DEMO
+NAME = GJK
 ICON = icon.png
-DESCRIPTION = "CE C Toolchain Demo"
+DESCRIPTION = "Test GJK Collision Detection"
 COMPRESSED = NO
 
 CFLAGS = -Wall -Wextra -Oz -DTI84PCE
-CXXFLAGS = -Wall -Wextra -Oz
+CXXFLAGS = -Wall -Wextra -Oz -DTI84PCE
 
 # ----------------------------
 
