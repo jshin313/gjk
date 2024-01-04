@@ -1,4 +1,6 @@
 #ifndef TI84PCE
+
+// SDL2 rendering code based on https://web.dev/articles/drawing-to-canvas-in-emscripten
 #include <stdbool.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 
