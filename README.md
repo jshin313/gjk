@@ -9,19 +9,21 @@ Implementation of GJK algorithm for collision detection for native builds, WebAS
 * TI-84+ CE: `make ti` and transfer the `bin/GJK.8xp` file to your calculator
 
 ## Dependencies
+* TI-84+ CE
+    * [CE Toolchain](https://ce-programming.github.io/toolchain/static/getting-started.html)
+    * Transfer clibs to your calculator: https://tiny.cc/clibs
+* WebASM
+    * [emcc](https://emscripten.org/docs/getting_started/downloads.html)
 * Native
+    * make, clang
+
+The core `src/gfx/` code doesn't require anything special, but you need the SDL2 and SDL_gfx for the demo of the library for native and WebASM
     * SDL2
     * SDL2_gfx
 ```
  sudo apt-get install libsdl2-dev
  sudo apt-get install libsdl2-gfx-dev
 ```
-
-* WebASM
-    * [emcc](https://emscripten.org/docs/getting_started/downloads.html)
-* TI-84+ CE
-    * [CE Toolchain](https://ce-programming.github.io/toolchain/static/getting-started.html)
-    * Transfer clibs to your calculator: https://tiny.cc/clibs
 
 ## Directories
 * `public`: WebASM `index.html` and `index.js`
