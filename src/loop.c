@@ -12,7 +12,6 @@
 #include "utils.h"
 #include "loop.h"
 
-// Set up polygons
 int points1[] = {
 	10+50, 30,   // (x0, y0)
 	10+50, 60,   // (x1, y1)
@@ -21,11 +20,11 @@ int points1[] = {
 };
 
 int points2[] = {
-	100,    100-30,   // (x0, y0)
-	100-30, 100-10,   // (x1, y1)
-	100-15, 100+30,   // (x2, y2)
-	100+15, 100+30,   // (x3, y3)
-	100+30, 100-10,   // (x4, y4)
+	150,    110-30,   // (x0, y0)
+	150-30, 110-10,   // (x1, y1)
+	150-15, 110+30,   // (x2, y2)
+	150+15, 110+30,   // (x3, y3)
+	150+30, 110-10,   // (x4, y4)
 };
 
 // Divide by 2 since each point has is a pair
@@ -128,12 +127,12 @@ bool handle_events() {
 		points2[8] = mouse_x+30, points2[9] = mouse_y-10;   // (x4, y4)
 	}
 
-	static uint32_t ticksForNextRedraw = 0;
+	static uint64_t ticksForNextRedraw = 0;
 
-	uint32_t ticksNow = SDL_GetTicks();
+	uint64_t ticksNow = SDL_GetTicks();
 	if (SDL_TICKS_PASSED(ticksNow, ticksForNextRedraw)) {
 		// Throttle redraw
-		ticksForNextRedraw = ticksNow + 10;
+		ticksForNextRedraw = ticksNow + 1;
 
 		struct polygon_t gjk_poly1 = {
 			.points = (struct vector_t*) alloca(NUM_POINTS_1 * sizeof(struct vector_t)),
@@ -147,7 +146,9 @@ bool handle_events() {
 		convert_to_polygon_t(points1, NUM_POINTS_1, &gjk_poly1);
 		convert_to_polygon_t(points2, NUM_POINTS_2, &gjk_poly2);
 
-		redraw(gjk_collision(gjk_poly1, gjk_poly2));
+		int dist = gjk_collision(gjk_poly1, gjk_poly2);
+		printf("Dist: %d\n", dist);
+		redraw(dist == 0);
 	}
 
 	return true;

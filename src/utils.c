@@ -5,7 +5,7 @@
  */
 void convert_to_polygon_t(int *points, int num_points, struct polygon_t* polygon) {
 	for (int i = 0; i < num_points; i++) {
-		polygon->points[i] = (struct vector_t) {points[2*i], points[2*i+1], 0};
+		polygon->points[i] = (struct vector_t) {points[2*i], points[2*i+1]};
 	}
 }
 

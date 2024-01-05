@@ -1,5 +1,5 @@
 /**
- * GJK Collision Detection for 2D with distance and closest point calculations
+ * GJK Collision Detection for 2D with distance
  * Currently only supports only polygons with finitely many points 
  *
  * Based on these resources:
@@ -11,13 +11,14 @@
 #include <string.h>
 #include <alloca.h>
 #include "gjk.h"
+#include "fixed_point.h"
 
-const int MAX_ITERATIONS = 1000; // I just chose a number that looked good
+const int MAX_ITERATIONS = 10; // I just chose a number that looked good
+const int TOLERANCE = 1; // I just chose a number that looked good
 
 const struct vector_t ORIGIN = {
 	.x = 0,
 	.y = 0,
-	.z = 0,
 };
 
 int simplex_add(struct vector_t v, struct simplex_t* s) {
@@ -96,11 +97,15 @@ bool triangle_case(struct simplex_t* s, struct vector_t* d) {
 
 	if (dot(ab_perp, ao) > 0) { // Region AB
 		simplex_remove(0, s);
-		*d = ab_perp;
+		if (d != NULL) {
+			*d = ab_perp;
+		}
 		return false;
 	} else if (dot(ac_perp, ao) > 0) { // Region AC
 		simplex_remove(1, s);
-		*d = ac_perp;
+		if (d != NULL) {
+			*d = ac_perp;
+		}
 		return false;
 	}
 	return true;
@@ -115,7 +120,9 @@ bool line_case(struct simplex_t* s, struct vector_t* d) {
 
 	struct vector_t ab_perp = triple_product2(ab, ao, ab);
 
-	*d = ab_perp;
+	if (d != NULL) {
+		*d = ab_perp;
+	}
 	return false;
 }
 
@@ -126,7 +133,51 @@ bool contains_origin(struct simplex_t* s, struct vector_t* d) {
 	return triangle_case(s, d);
 }
 
-bool gjk_collision(struct polygon_t poly1, struct polygon_t poly2) { 
+bool same_quadrant(struct vector_t A, struct vector_t B) {
+	bool sign_A_x = A.x > 0;
+	bool sign_B_x = B.x > 0;
+	bool sign_A_y = A.y > 0;
+	bool sign_B_y = B.y > 0;
+
+	return (sign_A_x == sign_B_x && sign_A_y == sign_B_y);
+}
+
+struct vector_t closest_point_to_origin(struct vector_t A, struct vector_t B) {
+	// If both points are in the same quadrant, the closest point on the 
+	// line segment to the origin is just whichever endpoint is closer
+	if (same_quadrant(A, B)) {
+		int64_t A_dp = dot(A, A);
+		int64_t B_dp = dot(B, B);
+
+		if (A_dp > B_dp) {
+			return B;
+		}
+		return B;
+	}
+
+	struct vector_t AB = sub(B, A);
+	struct vector_t AO = sub(ORIGIN, A);
+
+	int64_t AB_dp = dot(AB, AB);
+
+	if (AB_dp == 0) {
+		// This means both A and B are the same point
+		return A;
+	}
+
+	// Anytime division is done, convert to fixed point again since division cancels out the scaling factor
+	fixed_point_Q16_t t = int_to_fixed_point(dot(AO, AB)) / AB_dp;
+	struct vector_t t_AB = scalar_mult(t, AB);
+	// Convert back to to undo the above conversion to fixed point
+	t_AB.x = fixed_point_to_int(t_AB.x);
+	t_AB.y = fixed_point_to_int(t_AB.y);
+
+	struct vector_t d = add(t_AB, A);
+
+	return d;
+}
+
+int gjk_collision(struct polygon_t poly1, struct polygon_t poly2) { 
 	// direction d to check = poly2.center - poly1.center
 	struct vector_t d = sub(get_centroid(poly2), get_centroid(poly1));
 
@@ -143,22 +194,23 @@ bool gjk_collision(struct polygon_t poly1, struct polygon_t poly2) {
 	simplex_add(support(d, minkowski_diff(poly1, poly2, diff)), &simplex);
 	
 	d = sub(ORIGIN, simplex.points[0]);
-	/* d = sub(ORIGIN, d); */
 
 	for (int iterations = 0; iterations < MAX_ITERATIONS; iterations++) {
 		struct vector_t A = support(d, minkowski_diff(poly1, poly2, diff));
 
 		if (dot(A, d) < 0) {
-			return false;
+			struct vector_t d = closest_point_to_origin(A, simplex.points[0]);
+			int dist = int_sqrt(dot(d, d));
+			return dist;
 		}
 
 		simplex_add(A, &simplex);
 
 		if (contains_origin(&simplex, &d)) {
-			return true;
+			return 0;
 		}
 	}
 
 	// If GJK doesn't converge after MAX_ITERATIONS, assume the polygons don't intersect
-	return false;
+	return -1;
 }

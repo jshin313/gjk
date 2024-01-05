@@ -16,7 +16,6 @@ extern "C" {
 struct vector_t {
 	int64_t x;
 	int64_t y;
-	int64_t z; // Not used currently
 };
 
 struct polygon_t {
@@ -34,11 +33,15 @@ int64_t dot(struct vector_t v1, struct vector_t v2);
  */
 struct vector_t sub(struct vector_t v1, struct vector_t v2);
 
+/**
+ * Computes \f$(\pmb{v_1} + \pmb{v_2})\f$
+ */
+struct vector_t add(struct vector_t v1, struct vector_t v2);
 
 /**
  * Computes \f$(s  \pmb{v})\f$ with scalar, s, and vector, v
  */
-struct vector_t scalar_mult(int32_t s, struct vector_t v);
+struct vector_t scalar_mult(int64_t s, struct vector_t v);
 
 /**
  * Computes (v1 x v2 x v3) using the following identity:
@@ -54,7 +57,7 @@ struct vector_t triple_product2(struct vector_t v1, struct vector_t v2, struct v
  *
  * Copied from https://en.wikipedia.org/wiki/Integer_square_root#Example_implementation_in_C
  */
-unsigned int int_sqrt(unsigned int s);
+int64_t int_sqrt(int64_t s);
 
 /**
  * Normalizes vector only if dot(v, v) != 0

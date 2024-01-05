@@ -44,11 +44,11 @@ struct polygon_t minkowski_diff(struct polygon_t poly1, struct polygon_t poly2, 
 struct vector_t support(struct vector_t d, struct polygon_t poly);
 
 /**
- * Checks whether poly1 and poly2 are intersecting (collision)
+ * Computes the minimum distance between two non-colliding polygons
  *
- * @return true if there is a collision, false if no collision
+ * @return min distance if collision, -1 if GJK fails to converge, or 0 if polygons collides
  */
-bool gjk_collision(struct polygon_t poly1, struct polygon_t poly2);
+int gjk_collision(struct polygon_t poly1, struct polygon_t poly2);
 
 #ifdef __cplusplus
 }
