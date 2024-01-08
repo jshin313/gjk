@@ -198,8 +198,6 @@ int gjk_collision(struct polygon_t poly1, struct polygon_t poly2) {
 	for (int iterations = 0; iterations < MAX_ITERATIONS; iterations++) {
 		struct vector_t A = support(d, minkowski_diff(poly1, poly2, diff));
 
-		// If A is not past the origin, then the simplex can't enclose the origin
-		// which means there is no collision
 		if (dot(A, d) < 0) {
 			struct vector_t d = closest_point_to_origin(A, simplex.points[0]);
 			int dist = int_sqrt(dot(d, d));

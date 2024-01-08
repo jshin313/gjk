@@ -11,7 +11,6 @@
 #include "gjk/gjk.h"
 #include "utils.h"
 #include "loop.h"
-#include "vector.h"
 
 int points1[] = {
 	10+50, 30,   // (x0, y0)
@@ -51,7 +50,7 @@ void redraw(bool collision) {
 		color_r = 0xFF;
 		color_g = 0x00;
 		color_b = 0x00;
-	}
+	} 
 
 	int16_t sdl_x_arr_1[NUM_POINTS_1], sdl_y_arr_1[NUM_POINTS_1];
 	int16_t sdl_x_arr_2[NUM_POINTS_2], sdl_y_arr_2[NUM_POINTS_2];
