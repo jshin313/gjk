@@ -7,30 +7,22 @@
 #include "vector.h"
 
 int64_t dot(struct vector_t v1, struct vector_t v2) {
-	return v1.x*v2.x + v1.y*v2.y;
+	return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
 }
 
 struct vector_t sub(struct vector_t v1, struct vector_t v2) {
 	return (struct vector_t) {
 		.x = v1.x-v2.x,
 		.y = v1.y-v2.y,
+		.z = v1.z-v2.z
 	};
 }
 
-/**
- * Computes \f$(\pmb{v_1} + \pmb{v_2})\f$
- */
-struct vector_t add(struct vector_t v1, struct vector_t v2) {
-	return (struct vector_t) {
-		.x = v1.x+v2.x,
-		.y = v1.y+v2.y,
-	};
-}
-
-struct vector_t scalar_mult(int64_t s, struct vector_t v) {
+struct vector_t scalar_mult(int32_t s, struct vector_t v) {
 	return (struct vector_t) {
 		.x= s * v.x,
 		.y= s * v.y,
+		.z= s * v.z
 	};
 }
 
@@ -41,17 +33,17 @@ struct vector_t triple_product2(struct vector_t v1, struct vector_t v2, struct v
 /**
  * https://en.wikipedia.org/wiki/Integer_square_root#Example_implementation_in_C
  */
-int64_t int_sqrt(int64_t s) {
+unsigned int int_sqrt(unsigned int s) {
 	// Zero yields zero
     // One yields one
 	if (s <= 1) 
 		return s;
 
     // Initial estimate (must be too high)
-	int64_t x0 = s / 2;
+	unsigned int x0 = s / 2;
 
 	// Update
-	int64_t x1 = (x0 + s / x0) / 2;
+	unsigned int x1 = (x0 + s / x0) / 2;
 
 	while (x1 < x0)	// Bound check
 	{
@@ -78,6 +70,7 @@ struct vector_t normalize_if_norm_nonzero(struct vector_t v) {
 	return (struct vector_t) {
 		.x= v.x/int_sqrt(dot(v, v)),
 		.y= v.y/int_sqrt(dot(v, v)),
+		.z= v.z/int_sqrt(dot(v, v)),
 	};
 }
 
@@ -85,15 +78,17 @@ struct vector_t normalize_if_norm_nonzero(struct vector_t v) {
  * Won't be exact, but we don't need precision (see above)
  */
 struct vector_t get_centroid(struct polygon_t poly) {
-	int64_t sum_x = 0, sum_y = 0;
+	int sum_x = 0, sum_y = 0, sum_z = 0;
 
 	for (int i = 0; i < poly.num_points; i++) {
 		sum_x += poly.points[i].x;
 		sum_y += poly.points[i].y;
+		sum_z += poly.points[i].z;
 	}
 
 	return (struct vector_t) {
 		.x= sum_x/poly.num_points,
 		.y= sum_y/poly.num_points,
+		.z= sum_z/poly.num_points,
 	};
 }
