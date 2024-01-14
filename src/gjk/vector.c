@@ -7,14 +7,13 @@
 #include "vector.h"
 
 int64_t dot(struct vector_t v1, struct vector_t v2) {
-	return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
+	return v1.x*v2.x + v1.y*v2.y;
 }
 
 struct vector_t sub(struct vector_t v1, struct vector_t v2) {
 	return (struct vector_t) {
 		.x = v1.x-v2.x,
 		.y = v1.y-v2.y,
-		.z = v1.z-v2.z
 	};
 }
 
@@ -22,7 +21,6 @@ struct vector_t scalar_mult(int32_t s, struct vector_t v) {
 	return (struct vector_t) {
 		.x= s * v.x,
 		.y= s * v.y,
-		.z= s * v.z
 	};
 }
 
@@ -70,7 +68,6 @@ struct vector_t normalize_if_norm_nonzero(struct vector_t v) {
 	return (struct vector_t) {
 		.x= v.x/int_sqrt(dot(v, v)),
 		.y= v.y/int_sqrt(dot(v, v)),
-		.z= v.z/int_sqrt(dot(v, v)),
 	};
 }
 
@@ -78,17 +75,15 @@ struct vector_t normalize_if_norm_nonzero(struct vector_t v) {
  * Won't be exact, but we don't need precision (see above)
  */
 struct vector_t get_centroid(struct polygon_t poly) {
-	int sum_x = 0, sum_y = 0, sum_z = 0;
+	int sum_x = 0, sum_y = 0;
 
 	for (int i = 0; i < poly.num_points; i++) {
 		sum_x += poly.points[i].x;
 		sum_y += poly.points[i].y;
-		sum_z += poly.points[i].z;
 	}
 
 	return (struct vector_t) {
 		.x= sum_x/poly.num_points,
 		.y= sum_y/poly.num_points,
-		.z= sum_z/poly.num_points,
 	};
 }

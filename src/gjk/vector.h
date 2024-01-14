@@ -16,7 +16,6 @@ extern "C" {
 struct vector_t {
 	int64_t x;
 	int64_t y;
-	int64_t z; // Not used currently
 };
 
 struct polygon_t {

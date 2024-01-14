@@ -17,7 +17,6 @@ const int MAX_ITERATIONS = 1000; // I just chose a number that looked good
 const struct vector_t ORIGIN = {
 	.x = 0,
 	.y = 0,
-	.z = 0,
 };
 
 int simplex_add(struct vector_t v, struct simplex_t* s) {
