@@ -13,10 +13,10 @@ BINDIR=bin
 
 LIBS=-lSDL2 -lSDL2_gfx
 
-_GJKEPADEPS = vector.h gjk.h fixed_point.h epa.h error.h
+_GJKEPADEPS = vector.h gjk.h fixed_point.h epa.h error.h utils.h
 GJKEPADEPS = $(patsubst %,$(GJKEPAIDIR)/%,$(_GJKEPADEPS))
 
-_DEPS = utils.h loop.h
+_DEPS =  loop.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 _OBJ = main.o utils.o loop.o vector.o gjk.o fixed_point.o epa.o error.o

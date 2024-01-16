@@ -11,7 +11,7 @@
 #include "gjk_epa/fixed_point.h"
 #include "gjk_epa/gjk.h"
 #include "gjk_epa/epa.h"
-#include "utils.h"
+#include "gjk_epa/utils.h"
 #include "loop.h"
 
 // Set up polygons

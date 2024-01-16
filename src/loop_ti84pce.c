@@ -4,7 +4,7 @@
 #include <alloca.h>
 
 #include "gjk_epa/gjk.h"
-#include "utils.h"
+#include "gjk_epa/utils.h"
 
 #include "loop_ti84pce.h"
 

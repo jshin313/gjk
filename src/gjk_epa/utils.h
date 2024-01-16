@@ -1,7 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "gjk_epa/vector.h"
+#include "vector.h"
 
 /**
  * Convert int* points into polygon_t type used by the gjk_collision function
