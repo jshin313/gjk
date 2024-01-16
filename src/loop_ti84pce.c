@@ -3,7 +3,7 @@
 #include <graphx.h>
 #include <alloca.h>
 
-#include "gjk/gjk.h"
+#include "gjk_epa/gjk.h"
 #include "utils.h"
 
 #include "loop_ti84pce.h"
@@ -44,7 +44,7 @@ void redraw() {
 	convert_to_polygon_t(points2, gjk_poly2.num_points, &gjk_poly2);
 
 	int color = GREEN;
-	if(gjk_collision(gjk_poly1, gjk_poly2)) {
+	if(gjk_collision(gjk_poly1, gjk_poly2, NULL)) {
 		color = RED;
 	}
 

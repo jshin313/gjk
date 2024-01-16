@@ -8,6 +8,9 @@
 extern "C" {
 #endif
 
+// I just chose numbers that looked good
+#define MAX_ITERATIONS 1000
+
 #define MAX_SIMPLEX_SIZE 256
 
 struct simplex_t {
@@ -21,6 +24,8 @@ struct simplex_t {
  * @return 0 if successful, -1 if it fails
  */
 int simplex_add(struct vector_t v, struct simplex_t * s);
+
+int simplex_insert(struct vector_t v, int idx, struct simplex_t* s);
 
 /**
  * Remove point from simplex
@@ -45,13 +50,14 @@ struct polygon_t minkowski_diff(struct polygon_t poly1, struct polygon_t poly2, 
 struct vector_t support(struct vector_t d, struct polygon_t poly1, struct polygon_t poly2);
 
 /**
- * Checks whether poly1 and poly2 are intersecting (collision)
+ * Checks whether poly1 and poly2 are intersecting (collision).
+ * The `simplex` argument allows you to specify a struct simplex_t to store the simplex information.
+ * If simplex is NULL, the function will create a simplex automatically.
  *
  * @return true if there is a collision, false if no collision
  */
-bool gjk_collision(struct polygon_t poly1, struct polygon_t poly2);
+bool gjk_collision(struct polygon_t poly1, struct polygon_t poly2, struct simplex_t* simplex);
 
-struct vector_t epa(struct polygon_t poly1, struct polygon_t poly2);
 #ifdef __cplusplus
 }
 #endif

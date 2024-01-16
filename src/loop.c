@@ -8,10 +8,11 @@
 #include <emscripten.h>
 #endif
 
-#include "gjk/gjk.h"
+#include "gjk_epa/fixed_point.h"
+#include "gjk_epa/gjk.h"
+#include "gjk_epa/epa.h"
 #include "utils.h"
 #include "loop.h"
-#include "gjk/fixed_point.h"
 
 // Set up polygons
 int points1[] = {
@@ -154,7 +155,7 @@ bool handle_events() {
 		printf("penetration vector: y: %ld + %ld/%d\n", fixed_point_to_int(penetration_vector.y), get_remainder(penetration_vector.y), FIXED_POINT_SCALING_FACTOR);
 		puts("");
 
-		bool colliding = gjk_collision(gjk_poly1, gjk_poly2);
+		bool colliding = gjk_collision(gjk_poly1, gjk_poly2, NULL);
 		int64_t offset_x = fixed_point_to_int(penetration_vector.x);
 		int64_t offset_y = fixed_point_to_int(penetration_vector.y);
 		if (colliding) {
