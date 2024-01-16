@@ -18,8 +18,8 @@ Implementation of GJK algorithm for collision detection for native builds, WebAS
     * make, clang
 
 The core `src/gfx/` code doesn't require anything special, but you need the SDL2 and SDL_gfx for the demo of the library for native and WebASM
-    * SDL2
-    * SDL2_gfx
+* SDL2
+* SDL2_gfx
 ```
  sudo apt-get install libsdl2-dev
  sudo apt-get install libsdl2-gfx-dev
@@ -39,7 +39,14 @@ The core `src/gfx/` code doesn't require anything special, but you need the SDL2
     * More comprehensive examples with concrete numbers and calculations
  * https://dyn4j.org/2010/04/gjk-distance-closest-points/
     * How to also get the closest points on two polygons with GJK
+ * https://blog.hamaluik.ca/posts/building-a-collision-engine-part-2-2d-penetration-vectors/
+    * Nice explanation of EPA
+ * https://dyn4j.org/2010/05/epa-expanding-polytope-algorithm/
+    * Another explanation of EPA with more examples
 
 ## TODO
 * Do better error handling with enums
     * https://stackoverflow.com/questions/385975/error-handling-in-c-code
+* Tidy up loop.c
+* Replace minkowski diff in support function
+* Split up demos for collision detection (GJK) and collision response (EPA)

@@ -113,6 +113,7 @@ bool handle_events() {
 		} else if (pnpoly(NUM_POINTS_2, points2, mouse_x, mouse_y) && !sdl_poly1_selected) {
 			sdl_poly2_selected = true;
 		}
+		
 	}
 	
 	// Update polygon state if you move mouse
@@ -128,13 +129,13 @@ bool handle_events() {
 		points2[6] = mouse_x+15, points2[7] = mouse_y+30;   // (x3, y3)
 		points2[8] = mouse_x+30, points2[9] = mouse_y-10;   // (x4, y4)
 	}
+	
+	static uint64_t ticksForNextRedraw = 0;
 
-	static uint32_t ticksForNextRedraw = 0;
-
-	uint32_t ticksNow = SDL_GetTicks();
+	uint64_t ticksNow = SDL_GetTicks();
 	if (SDL_TICKS_PASSED(ticksNow, ticksForNextRedraw)) {
 		// Throttle redraw
-		ticksForNextRedraw = ticksNow + 10;
+		ticksForNextRedraw = ticksNow + 1;
 
 		struct polygon_t gjk_poly1 = {
 			.points = (struct vector_t*) alloca(NUM_POINTS_1 * sizeof(struct vector_t)),
@@ -148,11 +149,29 @@ bool handle_events() {
 		convert_to_polygon_t(points1, NUM_POINTS_1, &gjk_poly1);
 		convert_to_polygon_t(points2, NUM_POINTS_2, &gjk_poly2);
 
-		redraw(gjk_collision(gjk_poly1, gjk_poly2));
 		struct vector_t penetration_vector = epa(gjk_poly1, gjk_poly2);
 		printf("penetration vector: x: %ld + %ld/%d\n", fixed_point_to_int(penetration_vector.x), get_remainder(penetration_vector.x), FIXED_POINT_SCALING_FACTOR);
 		printf("penetration vector: y: %ld + %ld/%d\n", fixed_point_to_int(penetration_vector.y), get_remainder(penetration_vector.y), FIXED_POINT_SCALING_FACTOR);
 		puts("");
+
+		bool colliding = gjk_collision(gjk_poly1, gjk_poly2);
+		int64_t offset_x = fixed_point_to_int(penetration_vector.x);
+		int64_t offset_y = fixed_point_to_int(penetration_vector.y);
+		if (colliding) {
+			if (sdl_poly1_selected) {
+				for (unsigned int i = 0; i < NUM_POINTS_1; i++) {
+					points1[2*i] -= offset_x;
+					points1[2*i+1] -= offset_y;
+				}
+			} else if (sdl_poly2_selected) {                        
+				for (unsigned int i = 0; i < NUM_POINTS_2; i++) {
+					points2[2*i] += offset_x;
+					points2[2*i+1] += offset_y;
+				}
+			}
+		}
+
+		redraw(colliding);
 	}
 
 	return true;
