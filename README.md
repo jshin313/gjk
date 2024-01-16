@@ -1,5 +1,7 @@
-# GJK Collision Detection
-Implementation of GJK algorithm for collision detection for native builds, WebASM, and the TI-84+ CE
+# GJK Collision Detection and EPA
+[Click here for a demo](https://jshin313.github.io/gjk)
+
+Implementation of GJK and EPA algorithm for collision detection for native builds, WebASM, and the TI-84+ CE
 
 ![Animated png of the GJK collision working with two polygons on a TI-84+ CE calculator](screenshot.png)
 
