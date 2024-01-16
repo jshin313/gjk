@@ -1,7 +1,7 @@
 # GJK Collision Detection and EPA
 [Click here for a demo](https://jshin313.github.io/gjk-epa)
 
-Implementation of GJK and EPA algorithm for collision detection and response for native builds, WebASM, and the TI-84+ CE
+2D Implementation of GJK and EPA algorithm for collision detection and response for native builds, WebASM, and the TI-84+ CE
 
 ![Animated png of the GJK collision working with two polygons on a TI-84+ CE calculator](screenshot.png)
 
@@ -19,7 +19,7 @@ Implementation of GJK and EPA algorithm for collision detection and response for
 * Native
     * make, clang
 
-The core `src/gfx/` code doesn't require anything special, but you need the SDL2 and SDL_gfx for the demo of the library for native and WebASM
+The core `src/gfx_epa/` code doesn't require anything special, but you need the SDL2 and SDL_gfx for the demo of the library for native and WebASM
 * SDL2
 * SDL2_gfx
 ```
@@ -34,13 +34,14 @@ The core `src/gfx/` code doesn't require anything special, but you need the SDL2
 * `src`: Source code
 
 ## Resources
-`src/gjk/gjk.c` is heavily based on the following resources:
+`src/gjk_epa/gjk.c` is heavily based on the following resources:
  * https://youtu.be/ajv46BSqcK4?si=FwvnEZ4qwEg9061W&t=1756
     * Very nice explanation on how GJK works
  * https://dyn4j.org/2010/04/gjk-gilbert-johnson-keerthi/
     * More comprehensive examples with concrete numbers and calculations
  * https://dyn4j.org/2010/04/gjk-distance-closest-points/
     * How to also get the closest points on two polygons with GJK
+`src/gjk_epa/epa.c` is heavily based on the following resources:
  * https://blog.hamaluik.ca/posts/building-a-collision-engine-part-2-2d-penetration-vectors/
     * Nice explanation of EPA
  * https://dyn4j.org/2010/05/epa-expanding-polytope-algorithm/

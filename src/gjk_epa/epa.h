@@ -9,6 +9,9 @@ extern "C" {
 
 #define TOLERANCE 1
 
+/**
+ * @return penetration vector with information on depth and direction of collision
+ */
 struct vector_t epa(struct polygon_t poly1, struct polygon_t poly2);
 
 #ifdef __cplusplus
