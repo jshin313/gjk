@@ -38,11 +38,11 @@ int simplex_remove(int idx, struct simplex_t * s);
 struct polygon_t minkowski_diff(struct polygon_t poly1, struct polygon_t poly2, struct polygon_t diff);
 
 /**
- * \f$ \pmb{v} = s_B(\pmb{d}) = \text{arg max}_{v \in P} \pmb{v} \dot \pmb{d} \f$
+ * \f$ \pmb{v} = s_B(\pmb{d}) = \text{arg max}_{v \in P} \pmb{v} \dot \pmb{d} \f$ where $P$ is the minkowski difference
  * 
- * @return Finds the point, v, on a polygon, P, furthest in the direction, d
+ * @return Finds the point, v, furthest in the direction, d, on the minkowski difference of poly1 and poly 2,
  */
-struct vector_t support(struct vector_t d, struct polygon_t poly);
+struct vector_t support(struct vector_t d, struct polygon_t poly1, struct polygon_t poly2);
 
 /**
  * Checks whether poly1 and poly2 are intersecting (collision)

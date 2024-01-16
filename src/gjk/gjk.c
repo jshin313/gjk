@@ -77,7 +77,7 @@ struct polygon_t minkowski_diff(struct polygon_t poly1, struct polygon_t poly2, 
 	return diff;
 }
 
-struct vector_t support(struct vector_t d, struct polygon_t poly) {
+struct vector_t get_farthest_point_in_direction(struct polygon_t poly, struct vector_t d) {
 	int64_t max_dp = dot(poly.points[0], d);
 	struct vector_t v = poly.points[0];
 
@@ -91,6 +91,13 @@ struct vector_t support(struct vector_t d, struct polygon_t poly) {
 	}
 
 	return v;
+}
+
+struct vector_t support(struct vector_t d, struct polygon_t poly1, struct polygon_t poly2) {
+	struct vector_t p1 = get_farthest_point_in_direction(poly1, d);
+	struct vector_t p2 = get_farthest_point_in_direction(poly2, sub(ORIGIN, d));
+	struct vector_t p3 = sub(p1, p2);
+	return p3;
 }
 
 // Note this is for handling a triangular simplex, GJK works for arbitrary polygon
@@ -143,22 +150,15 @@ bool gjk_collision(struct polygon_t poly1, struct polygon_t poly2) {
 
 	// direction d to check = poly2.center - poly1.center
 	/* struct vector_t d = (struct vector_t) {.x=1, .y=0}; */
-	struct vector_t d = (struct vector_t) {.x=int_to_fixed_point(1), .y=0};
-	/* struct vector_t d = sub(get_centroid(poly2), get_centroid(poly1)); */
+	struct vector_t d = sub(get_centroid(poly2), get_centroid(poly1));
 
-	// Stores the minkowski difference
-	struct polygon_t diff = {
-		.num_points = poly1.num_points * poly2.num_points,
-		.points = (struct vector_t* ) alloca(poly1.num_points * poly2.num_points * sizeof (struct vector_t)),
-	};
-
-	simplex_add(support(d, minkowski_diff(poly1, poly2, diff)), &simplex);
+	simplex_add(support(d, poly1, poly2), &simplex);
 
 	/* d = sub(ORIGIN, simplex.points[0]); */
 	d = sub(ORIGIN, d);
 
 	for (int iterations = 0; iterations < MAX_ITERATIONS; iterations++) {
-		struct vector_t A = support(d, minkowski_diff(poly1, poly2, diff));
+		struct vector_t A = support(d, poly1, poly2);
 
 		simplex_add(A, &simplex);
 
@@ -244,12 +244,6 @@ struct vector_t epa(struct polygon_t poly1, struct polygon_t poly2) {
 		return (struct vector_t){0, 0};
 	}
 
-	// Stores the minkowski difference
-	struct polygon_t diff = {
-		.num_points = poly1.num_points * poly2.num_points,
-		.points = (struct vector_t* ) alloca(poly1.num_points * poly2.num_points * sizeof (struct vector_t)),
-	};
-
 	int64_t e0 = (simplex.points[1].x - simplex.points[0].x) * (simplex.points[1].y + simplex.points[0].y);
 	int64_t e1 = (simplex.points[2].x - simplex.points[1].x) * (simplex.points[2].y + simplex.points[1].y);
 	int64_t e2 = (simplex.points[0].x - simplex.points[2].x) * (simplex.points[0].y + simplex.points[2].y);
@@ -257,7 +251,7 @@ struct vector_t epa(struct polygon_t poly1, struct polygon_t poly2) {
 
 	for (int i = 0; i < MAX_ITERATIONS; i++) {
 		struct edge_t e = find_closest_edge(winding, &simplex);
-		struct vector_t p = support(e.normal, minkowski_diff(poly1, poly2, diff));
+		struct vector_t p = support(e.normal, poly1, poly2);
 
 		// dot product scaling_factor^2, so divide by scaling factor again to get back to fixed_point
 		int64_t d = fixed_point_to_int(dot(p, e.normal));
