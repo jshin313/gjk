@@ -45,7 +45,3 @@ The core `src/gfx/` code doesn't require anything special, but you need the SDL2
     * Nice explanation of EPA
  * https://dyn4j.org/2010/05/epa-expanding-polytope-algorithm/
     * Another explanation of EPA with more examples
-
-## TODO
-* Do better error handling with enums
-    * https://stackoverflow.com/questions/385975/error-handling-in-c-code
