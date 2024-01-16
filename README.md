@@ -49,5 +49,3 @@ The core `src/gfx/` code doesn't require anything special, but you need the SDL2
 ## TODO
 * Do better error handling with enums
     * https://stackoverflow.com/questions/385975/error-handling-in-c-code
-* Tidy up loop.c
-* Split up demos for collision detection (GJK) and collision response (EPA)

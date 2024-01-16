@@ -11,26 +11,27 @@
 #include <alloca.h>
 #include "gjk.h"
 #include "fixed_point.h"
+#include "error.h"
 
 const struct vector_t ORIGIN = {
 	.x = 0,
 	.y = 0,
 };
 
-int simplex_add(struct vector_t v, struct simplex_t* s) {
+enum simplex_error_t simplex_add(struct vector_t v, struct simplex_t* s) {
 	if (s->num_points >= 3) {
-		return -1;
+		return GJK_SIMPLEX_GREATER_THAN_3;
 	}
 
 	s->points[s->num_points] = v;
 	s->num_points++;
 
-	return 0;
+	return SIMPLEX_SUCCESS;
 }
 
-int simplex_insert(struct vector_t v, int idx, struct simplex_t* s) {
+enum simplex_error_t simplex_insert(struct vector_t v, int idx, struct simplex_t* s) {
 	if (s->num_points >= MAX_SIMPLEX_SIZE) {
-		return -1;
+		return SIMPLEX_REACHED_MAX_CAPACITY;
 	}
 
 	// Shift all elements to the right by one
@@ -41,12 +42,12 @@ int simplex_insert(struct vector_t v, int idx, struct simplex_t* s) {
 	s->points[idx] = v;
 	s->num_points++;
 
-	return 0;
+	return SIMPLEX_SUCCESS;
 }
 
-int simplex_remove(int idx, struct simplex_t* s) {
+enum simplex_error_t simplex_remove(int idx, struct simplex_t* s) {
 	if (s->num_points <= 0) {
-		return -1;
+		return EMPTY_SIMPLEX;
 	}
 
 	// Shift all elements down one
@@ -60,13 +61,9 @@ int simplex_remove(int idx, struct simplex_t* s) {
 	}
 	s->num_points--;
 
-	return 0;
+	return SIMPLEX_SUCCESS;
 }
 
-/**
- * @param diff Pointer to polygon_t where minkowski difference result will be stored. This structure must be pre-initialized with an allocated points array and num_points = poly1.num_points * poly2.num_points
- *
- */
 struct polygon_t minkowski_diff(struct polygon_t poly1, struct polygon_t poly2, struct polygon_t diff) {
 
 	for (int i = 0; i < poly1.num_points; i++) {
@@ -115,12 +112,19 @@ bool triangle_case(struct simplex_t* s, struct vector_t* d) {
 	struct vector_t ac_perp = triple_product2(ab, ac, ac);
 
 	if (dot(ab_perp, ao) > 0) { // Region AB
-		simplex_remove(0, s);
 		*d = ab_perp;
+		enum simplex_error_t status = simplex_remove(0, s);
+		if (status == EMPTY_SIMPLEX) {
+			LOG("%s", simplex_error_string(status));
+		}
+
 		return false;
 	} else if (dot(ac_perp, ao) > 0) { // Region AC
-		simplex_remove(1, s);
 		*d = ac_perp;
+		enum simplex_error_t status = simplex_remove(1, s);
+		if (status == EMPTY_SIMPLEX) {
+			LOG("%s", simplex_error_string(status));
+		}
 		return false;
 	}
 	return true;
@@ -158,7 +162,10 @@ bool gjk_collision(struct polygon_t poly1, struct polygon_t poly2, struct simple
 	/* struct vector_t d = (struct vector_t) {.x=1, .y=0}; */
 	struct vector_t d = sub(get_centroid(poly2), get_centroid(poly1));
 
-	simplex_add(support(d, poly1, poly2), simplex);
+	enum simplex_error_t status = simplex_add(support(d, poly1, poly2), simplex);
+	if (status == GJK_SIMPLEX_GREATER_THAN_3) {
+		LOG("%s", simplex_error_string(status));
+	}
 
 	/* d = sub(ORIGIN, simplex.points[0]); */
 	d = sub(ORIGIN, d);
@@ -166,8 +173,10 @@ bool gjk_collision(struct polygon_t poly1, struct polygon_t poly2, struct simple
 	for (int iterations = 0; iterations < MAX_ITERATIONS; iterations++) {
 		struct vector_t A = support(d, poly1, poly2);
 
-		simplex_add(A, simplex);
-
+		enum simplex_error_t status = simplex_add(A, simplex);
+		if (status == GJK_SIMPLEX_GREATER_THAN_3) {
+			LOG("%s", simplex_error_string(status));
+		}
 
 		if (dot(A, d) < 0) {
 			return false;

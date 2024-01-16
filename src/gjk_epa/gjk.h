@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include "vector.h"
+#include "error.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,6 +12,9 @@ extern "C" {
 // I just chose numbers that looked good
 #define MAX_ITERATIONS 1000
 
+// Defines how fine the resolution of the simplex becomes for EPA when finding 
+// the penetration vector. This matters for shapes with curves and an infinite number
+// of points.
 #define MAX_SIMPLEX_SIZE 256
 
 struct simplex_t {
@@ -19,20 +23,19 @@ struct simplex_t {
 };
 
 /**
- * Add point to simplex
- * 
- * @return 0 if successful, -1 if it fails
+ * Add point to simplex for use in GJK. Only allows for 1 to 3 points in the simplex.
  */
-int simplex_add(struct vector_t v, struct simplex_t * s);
+enum simplex_error_t simplex_add(struct vector_t v, struct simplex_t* s);
 
-int simplex_insert(struct vector_t v, int idx, struct simplex_t* s);
+/**
+ * Insert point, v, at idx. Allows adding up to MAX_SIMPLEX_SIZE points.
+ */
+enum simplex_error_t simplex_insert(struct vector_t v, int idx, struct simplex_t* s);
 
 /**
  * Remove point from simplex
- *
- * @return 0 if successful, -1 if it fails
  */
-int simplex_remove(int idx, struct simplex_t * s);
+enum simplex_error_t simplex_remove(int idx, struct simplex_t* s);
 
 /**
  * For polygons, A and B, the minkowski difference is as follows
