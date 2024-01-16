@@ -209,7 +209,7 @@ struct edge_t find_closest_edge(int winding, struct simplex_t* s) {
 		int64_t d = fixed_point_to_int(dot(n, a));
 
 		// check the distance against the other distances
-		if (d < closest.distance) {
+		if (d!= 0 && d < closest.distance) {
 			// if this edge is closer then use it
 			closest.distance = d;
 			closest.normal = n;

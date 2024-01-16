@@ -150,8 +150,8 @@ bool handle_events() {
 
 		redraw(gjk_collision(gjk_poly1, gjk_poly2));
 		struct vector_t penetration_vector = epa(gjk_poly1, gjk_poly2);
-		printf("penetration vector: x: %lld + %ld/%d\n", fixed_point_to_int(penetration_vector.x), get_remainder(penetration_vector.x), FIXED_POINT_SCALING_FACTOR);
-		printf("penetration vector: y: %lld + %ld/%d\n", fixed_point_to_int(penetration_vector.y), get_remainder(penetration_vector.y), FIXED_POINT_SCALING_FACTOR);
+		printf("penetration vector: x: %ld + %ld/%d\n", fixed_point_to_int(penetration_vector.x), get_remainder(penetration_vector.x), FIXED_POINT_SCALING_FACTOR);
+		printf("penetration vector: y: %ld + %ld/%d\n", fixed_point_to_int(penetration_vector.y), get_remainder(penetration_vector.y), FIXED_POINT_SCALING_FACTOR);
 		puts("");
 	}
 
