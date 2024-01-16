@@ -23,6 +23,12 @@ struct polygon_t {
 	int num_points;
 };
 
+struct edge_t {
+	int64_t distance;
+	struct vector_t normal;
+	int index;
+};
+
 /**
  * Computes \f$(\pmb{v_1} \dot \pmb{v_2})\f$
  */
@@ -37,7 +43,7 @@ struct vector_t sub(struct vector_t v1, struct vector_t v2);
 /**
  * Computes \f$(s  \pmb{v})\f$ with scalar, s, and vector, v
  */
-struct vector_t scalar_mult(int32_t s, struct vector_t v);
+struct vector_t scalar_mult(int64_t s, struct vector_t v);
 
 /**
  * Computes (v1 x v2 x v3) using the following identity:
@@ -53,7 +59,7 @@ struct vector_t triple_product2(struct vector_t v1, struct vector_t v2, struct v
  *
  * Copied from https://en.wikipedia.org/wiki/Integer_square_root#Example_implementation_in_C
  */
-unsigned int int_sqrt(unsigned int s);
+int64_t int_sqrt(int64_t s);
 
 /**
  * Normalizes vector only if dot(v, v) != 0
@@ -61,7 +67,7 @@ unsigned int int_sqrt(unsigned int s);
  * 
  * @return normalized vector if dot(v, v) !=0 or just the vector if dot(v, v)==0
  */
-struct vector_t normalize_if_norm_nonzero(struct vector_t v);
+struct vector_t normalize(struct vector_t v);
 
 /**
  * Computes the centroid of a polygon by averaging over the number of points

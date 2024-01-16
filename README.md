@@ -39,3 +39,7 @@ The core `src/gfx/` code doesn't require anything special, but you need the SDL2
     * More comprehensive examples with concrete numbers and calculations
  * https://dyn4j.org/2010/04/gjk-distance-closest-points/
     * How to also get the closest points on two polygons with GJK
+
+## TODO
+* Do better error handling with enums
+    * https://stackoverflow.com/questions/385975/error-handling-in-c-code

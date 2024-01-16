@@ -5,6 +5,7 @@
  */
 
 #include "vector.h"
+#include "fixed_point.h"
 
 int64_t dot(struct vector_t v1, struct vector_t v2) {
 	return v1.x*v2.x + v1.y*v2.y;
@@ -17,31 +18,36 @@ struct vector_t sub(struct vector_t v1, struct vector_t v2) {
 	};
 }
 
-struct vector_t scalar_mult(int32_t s, struct vector_t v) {
+struct vector_t scalar_mult(int64_t s, struct vector_t v) {
 	return (struct vector_t) {
 		.x= s * v.x,
 		.y= s * v.y,
 	};
 }
 
+// Note: Values sometimes overflow
 struct vector_t triple_product2(struct vector_t v1, struct vector_t v2, struct vector_t v3) {
-	return sub(scalar_mult(dot(v1, v3), v2), scalar_mult(dot(v3, v2), v1));
+	int64_t v1_v3_dp = dot(v1, v3);
+	int64_t v3_v2_dp = dot(v3, v2);
+	struct vector_t t1 = scalar_mult(v1_v3_dp, v2);
+	struct vector_t t2 = scalar_mult(v3_v2_dp, v1);
+	return sub(t1, t2);
 }
 
 /**
  * https://en.wikipedia.org/wiki/Integer_square_root#Example_implementation_in_C
  */
-unsigned int int_sqrt(unsigned int s) {
+int64_t int_sqrt(int64_t s) {
 	// Zero yields zero
     // One yields one
 	if (s <= 1) 
 		return s;
 
     // Initial estimate (must be too high)
-	unsigned int x0 = s / 2;
+	int64_t x0 = s / 2;
 
 	// Update
-	unsigned int x1 = (x0 + s / x0) / 2;
+	int64_t x1 = (x0 + s / x0) / 2;
 
 	while (x1 < x0)	// Bound check
 	{
@@ -52,30 +58,35 @@ unsigned int int_sqrt(unsigned int s) {
 }
 
 /*
- * Won't be exact since int is used instead of floats, but we don't need too much precision, since we're only checking 
- * if vectors are < 0
+ * Won't be exact since int is used instead of floats
  *
  * Use norm so that integers don't get really big.
  *
  */
-struct vector_t normalize_if_norm_nonzero(struct vector_t v) {
-	int dp = dot(v, v);
+struct vector_t normalize(struct vector_t v) {
+	int64_t dp = dot(v, v);
 
 	if (dp == 0) {
 		return v;
 	}
 
-	return (struct vector_t) {
-		.x= v.x/int_sqrt(dot(v, v)),
-		.y= v.y/int_sqrt(dot(v, v)),
-	};
+	int64_t norm = int_sqrt(dp);
+	
+	// Anytime division is done, convert to fixed point again since division cancels out the scaling factor
+	v.x = int_to_fixed_point(v.x);
+	v.y = int_to_fixed_point(v.y);
+
+	v.x = v.x/norm;
+	v.y = v.y/norm;
+
+	return v; 
 }
 
 /*
- * Won't be exact, but we don't need precision (see above)
+ * Won't be exact, but we don't need precision
  */
 struct vector_t get_centroid(struct polygon_t poly) {
-	int sum_x = 0, sum_y = 0;
+	int64_t sum_x = 0, sum_y = 0;
 
 	for (int i = 0; i < poly.num_points; i++) {
 		sum_x += poly.points[i].x;

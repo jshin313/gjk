@@ -8,9 +8,10 @@
 extern "C" {
 #endif
 
-struct simplex_t {
-	struct vector_t points[3];
+#define MAX_SIMPLEX_SIZE 256
 
+struct simplex_t {
+	struct vector_t points[MAX_SIMPLEX_SIZE];
 	int num_points;
 };
 
@@ -50,6 +51,7 @@ struct vector_t support(struct vector_t d, struct polygon_t poly);
  */
 bool gjk_collision(struct polygon_t poly1, struct polygon_t poly2);
 
+struct vector_t epa(struct polygon_t poly1, struct polygon_t poly2);
 #ifdef __cplusplus
 }
 #endif

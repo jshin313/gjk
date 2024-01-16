@@ -11,6 +11,7 @@
 #include "gjk/gjk.h"
 #include "utils.h"
 #include "loop.h"
+#include "gjk/fixed_point.h"
 
 // Set up polygons
 int points1[] = {
@@ -148,6 +149,10 @@ bool handle_events() {
 		convert_to_polygon_t(points2, NUM_POINTS_2, &gjk_poly2);
 
 		redraw(gjk_collision(gjk_poly1, gjk_poly2));
+		struct vector_t penetration_vector = epa(gjk_poly1, gjk_poly2);
+		printf("penetration vector: x: %lld + %ld/%d\n", fixed_point_to_int(penetration_vector.x), get_remainder(penetration_vector.x), FIXED_POINT_SCALING_FACTOR);
+		printf("penetration vector: y: %lld + %ld/%d\n", fixed_point_to_int(penetration_vector.y), get_remainder(penetration_vector.y), FIXED_POINT_SCALING_FACTOR);
+		puts("");
 	}
 
 	return true;
