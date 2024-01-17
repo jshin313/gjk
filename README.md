@@ -41,6 +41,7 @@ The core `src/gfx_epa/` code doesn't require anything special, but you need the 
     * More comprehensive examples with concrete numbers and calculations
  * https://dyn4j.org/2010/04/gjk-distance-closest-points/
     * How to also get the closest points on two polygons with GJK
+
 `src/gjk_epa/epa.c` is heavily based on the following resources:
  * https://blog.hamaluik.ca/posts/building-a-collision-engine-part-2-2d-penetration-vectors/
     * Nice explanation of EPA
